@@ -106,6 +106,7 @@ database_entry_t database [] = {
     {"EVO15-AI9-STP", 0, "SLIMBOOK", SLB_PLATFORM_QC71, SLB_MODEL_EVO_15_AI9_STP},
 
     {"CREA15-A8-RTX", 0, "SLIMBOOK", SLB_PLATFORM_QC71, SLB_MODEL_CREATIVE_15_A8_RTX},
+    {"CREA15-AI9-RTX5", 0, "SLIMBOOK", SLB_PLATFORM_QC71, SLB_MODEL_CREATIVE_15_AI9_RTX5},
 
     {"ZERO-N100-4RJ", 0, "SLIMBOOK", SLB_PLATFORM_UNKNOWN, SLB_MODEL_ZERO_N100_4RJ},
     {"ZERO-V5", 0, "SLIMBOOK", SLB_PLATFORM_UNKNOWN, SLB_MODEL_ZERO_V5},
@@ -499,6 +500,37 @@ uint32_t slb_info_is_module_loaded()
     }
     
     return SLB_MODULE_NOT_LOADED;
+}
+
+uint32_t slb_info_get_performance_profiles()
+{
+    uint32_t count = 0;
+
+    uint32_t model = slb_info_get_model();
+    uint32_t family = model & SLB_FAMILY_MASK;
+
+    switch (family) {
+
+        case SLB_MODEL_PROX:
+        case SLB_MODEL_EXECUTIVE:
+            count = 2;
+
+            if (model == SLB_MODEL_EXECUTIVE_UC2) {
+                count = 3;
+            }
+        break;
+
+        case SLB_MODEL_TITAN:
+        case SLB_MODEL_HERO:
+        case SLB_MODEL_EVO:
+        case SLB_MODEL_CREATIVE:
+        case SLB_MODEL_EXCALIBUR:
+            count = 3;
+        break;
+
+    }
+
+    return count;
 }
 
 int64_t slb_info_uptime()
