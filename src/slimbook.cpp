@@ -109,9 +109,12 @@ database_entry_t database [] = {
     {"CREA15-AI9-RTX5", 0, "SLIMBOOK", SLB_PLATFORM_QC71, SLB_MODEL_CREATIVE_15_AI9_RTX5},
 
     {"ZERO-N100-4RJ", 0, "SLIMBOOK", SLB_PLATFORM_UNKNOWN, SLB_MODEL_ZERO_N100_4RJ},
+    {"ZERO-N150-4RJ", 0, "SLIMBOOK", SLB_PLATFORM_UNKNOWN, SLB_MODEL_ZERO_N150_4RJ},
     {"ZERO-V5", 0, "SLIMBOOK", SLB_PLATFORM_UNKNOWN, SLB_MODEL_ZERO_V5},
 
     {"ONE-AMD8", 0, "SLIMBOOK", SLB_PLATFORM_UNKNOWN, SLB_MODEL_ONE_AMD8},
+    {"ONE-M9-H2", 0, "SLIMBOOK", SLB_PLATFORM_UNKNOWN, SLB_MODEL_ONE_M9_H2},
+    {"ONE-M9-AI9", 0, "SLIMBOOK", SLB_PLATFORM_UNKNOWN, SLB_MODEL_ONE_M9_AI9},
 
     {"NAS-AMD8-8HDD-4RJ", 0, "SLIMBOOK", SLB_PLATFORM_UNKNOWN, SLB_MODEL_NAS_AMD8_8HDD_4RJ},
 
@@ -287,13 +290,28 @@ int32_t slb_info_retrieve()
     if (info_cached) {
         return 0;
     }
-
+    
     _get_info_dev("product_name", &info_product);
     _get_info_dev("product_sku", &info_sku);
     _get_info_dev("board_vendor", &info_vendor);
     _get_info_dev("bios_version", &info_bios_version);
     _get_info_dev("ec_firmware_release", &info_ec_firmware_release);
     _get_info_dev("product_serial", &info_serial);
+    
+    char* env = getenv("SLIMBOOK_OVERRIDE_NAME");
+    
+    if (env) {
+        vector<string> tmp = split(env,':');
+        
+        if (tmp.size() == 1) {
+            info_product = tmp[0];
+        }
+        
+        if (tmp.size() == 2) {
+            info_vendor = tmp[0];
+            info_product = tmp[1];
+        }
+    }
     
     string pretty_product = pretty_string(info_product);
     string pretty_vendor = pretty_string(info_vendor);
