@@ -183,13 +183,36 @@ void ITE8291R3::set_effect(uint32_t effect, map<uint32_t,uint32_t> properties)
 
 void ITE8291R3::set_layout()
 {
-    uint8_t* buffer = new buffer[ITE8291R3_COLS * 3];
+    uint8_t* raw_data = new uint8_t[2 + (ITE8291R3_COLS * 3)];
+    uint8_t* data = raw_data + 2;
     
-    for (int n=0;n<ITE8291R3_COLS*3;n+=3) {
-        buffer[n] = 0x16;
-        buffer[n+1] = 0xff;
-        buffer[n+2] = n;
+    raw_data[0] = 0;
+    raw_data[1] = 0;
+    
+    clog<<"opening "<<m_device<<endl;
+    int fd = open(m_device.c_str(), O_RDWR | O_NONBLOCK);
+        
+    int res;
+    
+    for (int r=0;r<ITE8291R3_ROWS;r++) {
+        for (int n=0;n<ITE8291R3_COLS;n++) {
+            data[n] = 0x32;
+            data[n+ITE8291R3_COLS] = 0x64;
+            data[n+ITE8291R3_COLS*2] = 0x32;
+        }
+        
+        uint8_t buffer[16] = {0};
+        
+        buffer[0] = 0;
+        buffer[1] = ITE8291R3_SET_ROW_INDEX;
+        buffer[2] = 0;
+        buffer[3] = r; //row
+        
+        res = ioctl(fd, HIDIOCSFEATURE(ITE8291R3_HID_REPORT_LENGTH + 1), buffer);
+        clog<<"status:"<<res<<endl;
+        
+        res = ioctl(fd, HIDIOCSOUTPUT(2 + (ITE8291R3_COLS * 3)), raw_data);
+        clog<<"status:"<<res<<endl;
     }
-    
-    
+    close(fd);
 }
