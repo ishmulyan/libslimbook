@@ -30,6 +30,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sys/wait.h>
 #include <mntent.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <iostream>
 #include <iomanip>
@@ -42,7 +43,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ctime>
 #include <sstream>
 #include <regex>
-#include <string.h>
+#include <chrono>
+#include <thread>
 
 #define SLB_REPORT_PRIVATE "SLB_REPORT_PRIVATE"
 #define SYS_AMDGPU "/sys/class/drm/card%d/device/"
@@ -950,6 +952,84 @@ int main(int argc,char* argv[])
         ite.set_effect(SLB_KBL_EFFECT_SOLID,props);
         
         ite.set_layout();
+    }
+    
+    if (command == "animation") {
+    
+        string path = argv[2];
+        
+        uint32_t model = slb_info_get_model();
+        
+        if ( !(model == SLB_MODEL_TITAN or model == SLB_MODEL_CREATIVE_15_AI9_RTX5)) {
+            cerr<<"Unsupported model"<<endl;
+            return 0;
+        }
+        
+        ITE8291R3 ite;
+        
+        bool ignoreline = false;
+        ifstream file;
+
+        file.open(path.c_str());
+        
+        while (file.good()) {
+            string line;
+            std::getline(file, line);
+            
+            vector<string> tokens = split(line,' ');
+            
+            if (tokens.size() == 0) {
+                continue;
+            }
+            
+            string opt = tokens[0];
+            
+            if (ignoreline) {
+                if (opt == "*/") {
+                    ignoreline = false;
+                }
+                continue;
+            }
+            
+            if (opt == "/*") {
+                continue;
+            }
+            
+            if (opt == "#") {
+                continue;
+            }
+            
+            if (opt == "pos") {
+                int x = std::stoi(tokens[1]);
+                int y = std::stoi(tokens[2]);
+                clog<<"pos "<<x<<","<<y<<endl;
+                ite.set_color(x,y,255,0,0);
+            }
+            
+            if (opt == "clear") {
+                clog<<"clear"<<endl;
+                ite.clear_layout();
+            }
+            
+            if (opt == "apply") {
+                clog<<"apply"<<endl;
+                ite.set_layout();
+            }
+            
+            if (opt == "wait") {
+                clog<<"wait"<<endl;
+                float seconds = std::stof(tokens[1]);
+                int ms = seconds * 1000;
+                std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+            }
+            /*
+            for (string token:tokens) {
+                clog<<"["<<token<<"]";
+            }
+            clog<<endl;
+            */
+        }
+        file.close();
     }
     
     return 0;

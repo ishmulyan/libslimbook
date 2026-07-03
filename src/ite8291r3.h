@@ -55,6 +55,8 @@ class ITE8291R3
     void set_effect(uint32_t effect, std::map<uint32_t,uint32_t> properties);
     
     void set_layout();
+    void set_color(int x,int y,uint8_t r,uint8_t g,uint8_t b);
+    void clear_layout();
     
     const std::string device() const
     {

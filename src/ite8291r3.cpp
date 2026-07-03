@@ -83,16 +83,18 @@ ITE8291R3::ITE8291R3() : m_ready(false)
     if (devices.size() > 0) {
         m_device = devices[0];
         m_ready = true;
+        m_layout = new uint8_t[ITE8291R3_ROWS * ITE8291R3_COLS * 3];
     }
 }
 
 ITE8291R3::ITE8291R3(string device) : m_device(device), m_ready(false)
 {
-
+    m_layout = new uint8_t[ITE8291R3_ROWS * ITE8291R3_COLS * 3];
 }
 
 ITE8291R3::~ITE8291R3()
 {
+    delete [] m_layout;
 }
 
 map<uint32_t,uint32_t> ITE8291R3::fetch()
@@ -189,16 +191,18 @@ void ITE8291R3::set_layout()
     raw_data[0] = 0;
     raw_data[1] = 0;
     
-    clog<<"opening "<<m_device<<endl;
+    //clog<<"opening "<<m_device<<endl;
     int fd = open(m_device.c_str(), O_RDWR | O_NONBLOCK);
         
     int res;
     
     for (int r=0;r<ITE8291R3_ROWS;r++) {
+        int moffset = r * ITE8291R3_COLS * 3;
+        
         for (int n=0;n<ITE8291R3_COLS;n++) {
-            data[n] = 0x32;
-            data[n+ITE8291R3_COLS] = 0x64;
-            data[n+ITE8291R3_COLS*2] = 0x32;
+            data[n] = m_layout[moffset + n];
+            data[n+ITE8291R3_COLS] = m_layout[moffset + n + ITE8291R3_COLS];
+            data[n+ITE8291R3_COLS*2] = m_layout[moffset + n + ITE8291R3_COLS * 2];
         }
         
         uint8_t buffer[16] = {0};
@@ -209,10 +213,31 @@ void ITE8291R3::set_layout()
         buffer[3] = r; //row
         
         res = ioctl(fd, HIDIOCSFEATURE(ITE8291R3_HID_REPORT_LENGTH + 1), buffer);
-        clog<<"status:"<<res<<endl;
+        //clog<<"status:"<<res<<endl;
         
         res = ioctl(fd, HIDIOCSOUTPUT(2 + (ITE8291R3_COLS * 3)), raw_data);
-        clog<<"status:"<<res<<endl;
+        //clog<<"status:"<<res<<endl;
     }
     close(fd);
 }
+
+void ITE8291R3::set_color(int x,int y,uint8_t r,uint8_t g,uint8_t b)
+{
+    if (x < 0 or y < 0 or x>= ITE8291R3_COLS or y>= ITE8291R3_ROWS) {
+        clog<<"out of bounds"<<endl;
+        return;
+    }
+    
+    int offset = y * ITE8291R3_COLS * 3;
+    m_layout[offset + ITE8291R3_COLS*0 + x] = b;
+    m_layout[offset + ITE8291R3_COLS*1 + x] = g;
+    m_layout[offset + ITE8291R3_COLS*2 + x] = r;
+}
+
+void ITE8291R3::clear_layout()
+{
+    for (int n=0;n<ITE8291R3_ROWS * ITE8291R3_COLS * 3;n++) {
+        m_layout[n] = 0;
+    }
+}
+
