@@ -57,6 +57,8 @@ class ITE8291R3
     void set_layout();
     void set_color(int x,int y,uint8_t r,uint8_t g,uint8_t b);
     void clear_layout();
+    void fill_layout(uint8_t r, uint8_t g, uint8_t b);
+    void shift_layout(int dx,int dy);
     
     const std::string device() const
     {

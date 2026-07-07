@@ -1003,7 +1003,12 @@ int main(int argc,char* argv[])
                 int x = std::stoi(tokens[1]);
                 int y = std::stoi(tokens[2]);
                 clog<<"pos "<<x<<","<<y<<endl;
-                ite.set_color(x,y,255,0,0);
+                vector<string> tmp = split(tokens[3],',');
+                int r = std::stoi(tmp[0]);
+                int g = std::stoi(tmp[1]);
+                int b = std::stoi(tmp[2]);
+ 
+                ite.set_color(y,x,r,g,b);
             }
             
             if (opt == "clear") {
@@ -1021,6 +1026,25 @@ int main(int argc,char* argv[])
                 float seconds = std::stof(tokens[1]);
                 int ms = seconds * 1000;
                 std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+            }
+            
+            if (opt == "fill") {
+                clog<<"fill"<<endl;
+                vector<string> tmp = split(tokens[1],',');
+                int r = std::stoi(tmp[0]);
+                int g = std::stoi(tmp[1]);
+                int b = std::stoi(tmp[2]);
+                
+                ite.fill_layout(r,g,b);
+            }
+            
+            if (opt == "shift") {
+                clog<<"shift"<<endl;
+                int dx = std::stoi(tokens[1]);
+                int dy = std::stoi(tokens[2]);
+                
+                ite.shift_layout(dy,dx);
+                
             }
             /*
             for (string token:tokens) {

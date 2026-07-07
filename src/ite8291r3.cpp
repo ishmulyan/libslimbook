@@ -84,12 +84,14 @@ ITE8291R3::ITE8291R3() : m_ready(false)
         m_device = devices[0];
         m_ready = true;
         m_layout = new uint8_t[ITE8291R3_ROWS * ITE8291R3_COLS * 3];
+        clear_layout();
     }
 }
 
 ITE8291R3::ITE8291R3(string device) : m_device(device), m_ready(false)
 {
     m_layout = new uint8_t[ITE8291R3_ROWS * ITE8291R3_COLS * 3];
+    clear_layout();
 }
 
 ITE8291R3::~ITE8291R3()
@@ -200,9 +202,9 @@ void ITE8291R3::set_layout()
         int moffset = r * ITE8291R3_COLS * 3;
         
         for (int n=0;n<ITE8291R3_COLS;n++) {
-            data[n] = m_layout[moffset + n];
-            data[n+ITE8291R3_COLS] = m_layout[moffset + n + ITE8291R3_COLS];
-            data[n+ITE8291R3_COLS*2] = m_layout[moffset + n + ITE8291R3_COLS * 2];
+            data[n] = m_layout[moffset + n*3];
+            data[n+ITE8291R3_COLS] = m_layout[moffset + n*3 + 1];
+            data[n+ITE8291R3_COLS*2] = m_layout[moffset + n*3 + 2];
         }
         
         uint8_t buffer[16] = {0};
@@ -229,15 +231,46 @@ void ITE8291R3::set_color(int x,int y,uint8_t r,uint8_t g,uint8_t b)
     }
     
     int offset = y * ITE8291R3_COLS * 3;
-    m_layout[offset + ITE8291R3_COLS*0 + x] = b;
-    m_layout[offset + ITE8291R3_COLS*1 + x] = g;
-    m_layout[offset + ITE8291R3_COLS*2 + x] = r;
+    m_layout[offset + x*3 + 0] = b;
+    m_layout[offset + x*3 + 1] = g;
+    m_layout[offset + x*3 + 2] = r;
 }
 
 void ITE8291R3::clear_layout()
 {
-    for (int n=0;n<ITE8291R3_ROWS * ITE8291R3_COLS * 3;n++) {
-        m_layout[n] = 0;
-    }
+    fill_layout(0,0,0);
 }
 
+void ITE8291R3::fill_layout(uint8_t r, uint8_t g, uint8_t b)
+{
+    for (int n=0;n<ITE8291R3_ROWS * ITE8291R3_COLS * 3;n+=3) {
+        m_layout[n] = b;
+        m_layout[n+1] = g;
+        m_layout[n+2] = r;
+    }
+
+}
+
+void ITE8291R3::shift_layout(int dx, int dy)
+{
+    uint8_t* target = new uint8_t[ITE8291R3_ROWS * ITE8291R3_COLS * 3];
+    
+    for (int i=0;i<ITE8291R3_COLS;i++) {
+        for (int j=0;j<ITE8291R3_ROWS;j++) {
+            
+            int ii = (i + dx) % ITE8291R3_COLS;
+            int jj = (j + dy) % ITE8291R3_ROWS;
+            
+            int soffset = i*3 + (j * ITE8291R3_COLS * 3);
+            int toffset = ii*3 + (jj * ITE8291R3_COLS * 3);
+            
+            target[toffset + 0] = m_layout[soffset + 0];
+            target[toffset + 1] = m_layout[soffset + 1];
+            target[toffset + 2] = m_layout[soffset + 2];
+        }
+    }
+    
+    delete [] m_layout;
+    
+    m_layout = target;
+}
