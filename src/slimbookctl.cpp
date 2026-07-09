@@ -954,8 +954,12 @@ int main(int argc,char* argv[])
         ite.set_layout();
     }
     
-    if (command == "animation") {
-    
+    if (command == "set-kbd-animation") {
+        if (argc < 3) {
+            show_help();
+            return 1;
+        }
+
         string path = argv[2];
         
         uint32_t model = slb_info_get_model();
@@ -1002,7 +1006,6 @@ int main(int argc,char* argv[])
             if (opt == "pos") {
                 int x = std::stoi(tokens[1]);
                 int y = std::stoi(tokens[2]);
-                clog<<"pos "<<x<<","<<y<<endl;
                 vector<string> tmp = split(tokens[3],',');
                 int r = std::stoi(tmp[0]);
                 int g = std::stoi(tmp[1]);
@@ -1012,24 +1015,20 @@ int main(int argc,char* argv[])
             }
             
             if (opt == "clear") {
-                clog<<"clear"<<endl;
                 ite.clear_layout();
             }
             
             if (opt == "apply") {
-                clog<<"apply"<<endl;
                 ite.set_layout();
             }
             
             if (opt == "wait") {
-                clog<<"wait"<<endl;
                 float seconds = std::stof(tokens[1]);
                 int ms = seconds * 1000;
                 std::this_thread::sleep_for(std::chrono::milliseconds(ms));
             }
             
             if (opt == "fill") {
-                clog<<"fill"<<endl;
                 vector<string> tmp = split(tokens[1],',');
                 int r = std::stoi(tmp[0]);
                 int g = std::stoi(tmp[1]);
@@ -1039,12 +1038,16 @@ int main(int argc,char* argv[])
             }
             
             if (opt == "shift") {
-                clog<<"shift"<<endl;
                 int dx = std::stoi(tokens[1]);
                 int dy = std::stoi(tokens[2]);
                 
                 ite.shift_layout(dy,dx);
-                
+            }
+
+            if (opt == "brightness") {
+                int value = std::stoi(tokens[1]);
+
+                ite.set_brightness(value);
             }
             /*
             for (string token:tokens) {

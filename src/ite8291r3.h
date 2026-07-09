@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2023 Slimbook <dev@slimbook.es>
+Copyright (C) 2026 Slimbook <dev@slimbook.es>
 
 This file is part of libslimbook.
 
@@ -25,6 +25,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ITE8291R3_HID_REPORT_LENGTH 9
 
 #define ITE8291R3_SET_EFFECT 8
+#define ITE8291R3_SET_BRIGHTNESS 9
 #define ITE8291R3_GET_EFFECT 136
 #define ITE8291R3_SET_ROW_INDEX 22
 
@@ -53,7 +54,8 @@ class ITE8291R3
     
     std::map<uint32_t,uint32_t> fetch();
     void set_effect(uint32_t effect, std::map<uint32_t,uint32_t> properties);
-    
+    void set_brightness(uint32_t value);
+
     void set_layout();
     void set_color(int x,int y,uint8_t r,uint8_t g,uint8_t b);
     void clear_layout();
