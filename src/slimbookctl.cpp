@@ -941,19 +941,6 @@ int main(int argc,char* argv[])
         return slb_kbd_effect_set(0,effect,properties.data());
     }
     
-    if (command == "test") {
-        ITE8291R3 ite;
-        
-        ite.fetch();
-        
-        
-        map<uint32_t,uint32_t> props;
-        props[SLB_KBL_PROPERTY_BRIGHTNESS] = SLB_KBL_BRIGHTNESS_CURRENT;
-        ite.set_effect(SLB_KBL_EFFECT_SOLID,props);
-        
-        ite.set_layout();
-    }
-    
     if (command == "set-kbd-animation") {
         if (argc < 3) {
             show_help();
