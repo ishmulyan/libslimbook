@@ -21,16 +21,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SLB_ITE8291R3_H
 #define SLB_ITE8291R3_H
 
-#define SLB_VENDOR_ID_ITE 0x048d
-#define ITE8291R3_HID_REPORT_LENGTH 9
+#define SLB_VENDOR_ID_ITE            0x048d
+#define ITE8291R3_HID_REPORT_LENGTH  9
 
-#define ITE8291R3_SET_EFFECT 8
-#define ITE8291R3_SET_BRIGHTNESS 9
-#define ITE8291R3_GET_EFFECT 136
-#define ITE8291R3_SET_ROW_INDEX 22
+#define ITE8291R3_SET_EFFECT         8
+#define ITE8291R3_SET_BRIGHTNESS     9
+#define ITE8291R3_GET_EFFECT         136
+#define ITE8291R3_SET_ROW_INDEX      22
 
-#define ITE8291R3_ROWS 6
-#define ITE8291R3_COLS 21
+#define ITE8291R3_ROWS               6
+#define ITE8291R3_COLS               21
 
 #include <linux/hidraw.h>
 

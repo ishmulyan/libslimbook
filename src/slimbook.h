@@ -174,7 +174,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SLB_KBL_COLOR_RANDOM            0x08
 
 #define SLB_KBL_BRIGHTNESS_CURRENT      0x00
-#define SLB_KBL_BRIGHTNESS_OFF          0x01
+#define SLB_KBL_BRIGHTNESS_ZERO         0x01
 #define SLB_KBL_BRIGHTNESS_FULL         0x02
 
 

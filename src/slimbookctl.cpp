@@ -185,6 +185,8 @@ void show_help()
     cout<<"get-kbd-max-brightness: shows maximum keyboard brightness value in hexadecimal"<<endl;
     cout<<"dec-kbd-brightness: decrease keyboard brightness"<<endl;
     cout<<"inc-kbd-brightness: increase keyboard brightness"<<endl;
+    cout<<"set-kbd-effect PROPERTIES: sets a keyboard effect given a property list"<<endl;
+    cout<<"set-kbd-animation FILE: loads an animation file"<<endl;
     cout<<"get-fn-lock: gets Fn lock status"<<endl;
     cout<<"set-fn-lock VALUE: sets Fn lock [0-1]"<<endl;
     cout<<"toggle-fn-lock: toggle Fn lock"<<endl;
@@ -195,6 +197,21 @@ void show_help()
     cout<<"report: creates a tar.gz with system information"<<endl;
     cout<<"report-full: same as report, but it also gathers some sensible data as MAC address or board serial number"<<endl;
     cout<<"help: show this help"<<endl;
+}
+
+void show_effect_help()
+{
+    cout<<"Available properties:"<<endl;
+    cout<<"effect: breathing, wave, rainbow, marquee, raindrop, aurora, fireworks, solid"<<endl;
+    cout<<"speed: [0-5]"<<endl;
+    cout<<"color: red, orange, yellow, green, blue, teal, purple, random"<<endl;
+    cout<<"reactive: [0-1]"<<endl;
+    cout<<"brightness: current, zero, full"<<endl;
+    cout<<"direction: none, right, left, up, down"<<endl;
+    cout<<"save: [0-1]"<<endl;
+    cout<<endl;
+    cout<<"example:"<<endl;
+    cout<<"slimbookctl set-kbd-effect effect:breathing speed:5 color:yellow"<<endl;
 }
 
 string get_info()
@@ -864,6 +881,11 @@ int main(int argc,char* argv[])
     
     if (command == "set-kbd-effect") {
     
+        if (argc < 3) {
+            show_effect_help();
+            return 0;
+        }
+    
         map<string,uint32_t> names = {
             {"effect", SLB_KBL_PROPERTY_EFFECT},
             {"brightness", SLB_KBL_PROPERTY_BRIGHTNESS},
@@ -906,6 +928,12 @@ int main(int argc,char* argv[])
             {"down",4}
         };
         
+        map<string, uint32_t> brightness_levels = {
+            {"current", 0},
+            {"zero", 1},
+            {"full", 2}
+        };
+        
         vector<uint32_t> properties;
         uint32_t effect = 0;
         
@@ -930,6 +958,12 @@ int main(int argc,char* argv[])
                 
                 if (key == "direction") {
                     properties.push_back(directions[value]);
+                    continue;
+                }
+                
+                if (key == "brightness") {
+                    properties.push_back(brightness_levels[value]);
+                    continue;
                 }
                 
                 properties.push_back(std::stoi(value));
@@ -1033,7 +1067,6 @@ int main(int argc,char* argv[])
 
             if (opt == "brightness") {
                 int value = std::stoi(tokens[1]);
-
                 ite.set_brightness(value);
             }
             /*

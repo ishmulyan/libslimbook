@@ -147,7 +147,7 @@ void ITE8291R3::set_effect(uint32_t effect, map<uint32_t,uint32_t> properties)
         uint32_t brightness = properties[SLB_KBL_PROPERTY_BRIGHTNESS];
         
         switch (brightness) {
-            case SLB_KBL_BRIGHTNESS_OFF:
+            case SLB_KBL_BRIGHTNESS_ZERO:
                 brightness = 0;
             break;
             
@@ -195,9 +195,9 @@ void ITE8291R3::set_brightness(uint32_t value)
         buffer[0] = 0;
         buffer[1] = ITE8291R3_SET_BRIGHTNESS;
         buffer[2] = 0x02;
-        buffer[3] = 0;
+        buffer[3] = value;
         buffer[4] = 0;
-        buffer[5] = value;
+        buffer[5] = 0;
         buffer[6] = 0;
         buffer[7] = 0;
         buffer[8] = 0;
