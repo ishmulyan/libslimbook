@@ -219,6 +219,7 @@ string get_info()
     stringstream sout;
     
     map<int,string> yesno = {{0,"no"},{1,"yes"}};
+    map<int,string> enabled_string = {{0,"disabled"},{1,"enabled"}};
     map<int,string> module_status_string = {{SLB_MODULE_NOT_LOADED,"no"},
                                             {SLB_MODULE_LOADED,"yes"},
                                             {SLB_MODULE_NOT_NEEDED,"not needed"},
@@ -471,7 +472,7 @@ string get_info()
         sout<<"confidence:"<<std::dec<<confidence<<"\n";
     }
     
-    sout<<"module loaded:"<<module_status_string[module_status]<<"\n";
+    sout<<"module loaded: "<<module_status_string[module_status]<<"\n";
     
     sout<<"\n";
     
@@ -540,6 +541,13 @@ string get_info()
             }
         }
         sout<<"profile: "<<profile_name<<"\n";
+        
+        if (model == SLB_MODEL_CREATIVE_15_AI9_RTX5) {
+            uint32_t ac_auto;
+            if (slb_qc71_ac_auto_boot_get(&ac_auto) == 0) {
+                sout << "ac auto boot: "<< enabled_string[ac_auto] <<"\n";
+            }
+        }
     }
     
     sout<<std::flush;
